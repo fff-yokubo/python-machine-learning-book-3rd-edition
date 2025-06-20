@@ -1,5 +1,4 @@
-# coding: utf-8
-
+# %%
 
 import pandas as pd
 from io import StringIO
@@ -431,7 +430,7 @@ print('normalized:', (ex - ex.min()) / (ex.max() - ex.min()))
 
 
 
-
+# %%
 
 
 # ## Sparse solutions with L1-regularization

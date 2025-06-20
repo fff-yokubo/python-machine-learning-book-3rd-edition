@@ -1,5 +1,5 @@
 # coding: utf-8
-
+# %%
 
 from sklearn import datasets
 import numpy as np
@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import matplotlib
+import seaborn as sns;sns.set()
 from distutils.version import LooseVersion
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -72,92 +73,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 
 
-
-
-
-
-# # Choosing a classification algorithm
-
-# ...
-
-# # First steps with scikit-learn
-
-# Loading the Iris dataset from scikit-learn. Here, the third column represents the petal length, and the fourth column the petal width of the flower examples. The classes are already converted to integer labels where 0=Iris-Setosa, 1=Iris-Versicolor, 2=Iris-Virginica.
-
-
-
-
-iris = datasets.load_iris()
-X = iris.data[:, [2, 3]]
-y = iris.target
-
-print('Class labels:', np.unique(y))
-
-
-# Splitting data into 70% training and 30% test data:
-
-
-
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.3, random_state=1, stratify=y)
-
-
-
-
-print('Labels count in y:', np.bincount(y))
-print('Labels count in y_train:', np.bincount(y_train))
-print('Labels count in y_test:', np.bincount(y_test))
-
-
-# Standardizing the features:
-
-
-
-
-sc = StandardScaler()
-sc.fit(X_train)
-X_train_std = sc.transform(X_train)
-X_test_std = sc.transform(X_test)
-
-
-
-# ## Training a perceptron via scikit-learn
-
-
-
-
-ppn = Perceptron(eta0=0.1, random_state=1)
-ppn.fit(X_train_std, y_train)
-
-
-# **Note**
-# 
-# - You can replace `Perceptron(n_iter, ...)` by `Perceptron(max_iter, ...)` in scikit-learn >= 0.19. The `n_iter` parameter is used here deliberately, because some people still use scikit-learn 0.18.
-
-
-
-y_pred = ppn.predict(X_test_std)
-print('Misclassified examples: %d' % (y_test != y_pred).sum())
-
-
-
-
-
-print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
-
-
-
-
-print('Accuracy: %.3f' % ppn.score(X_test_std, y_test))
-
-
-
-
-
 # To check recent matplotlib compatibility
-
-
 def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
 
     # setup marker generator and color map
@@ -213,63 +129,12 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
                         label='test set')        
 
 
-# Training a perceptron model using the standardized training data:
-
-
-
-X_combined_std = np.vstack((X_train_std, X_test_std))
-y_combined = np.hstack((y_train, y_test))
-
-plot_decision_regions(X=X_combined_std, y=y_combined,
-                      classifier=ppn, test_idx=range(105, 150))
-plt.xlabel('petal length [standardized]')
-plt.ylabel('petal width [standardized]')
-plt.legend(loc='upper left')
-
-plt.tight_layout()
-#plt.savefig('images/03_01.png', dpi=300)
-plt.show()
-
-
-
-# # Modeling class probabilities via logistic regression
-
-# ...
-
-# ### Logistic regression intuition and conditional probabilities
-
-
-
 
 
 def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
-z = np.arange(-7, 7, 0.1)
-phi_z = sigmoid(z)
 
-plt.plot(z, phi_z)
-plt.axvline(0.0, color='k')
-plt.ylim(-0.1, 1.1)
-plt.xlabel('z')
-plt.ylabel('$\phi (z)$')
-
-# y axis ticks and gridline
-plt.yticks([0.0, 0.5, 1.0])
-ax = plt.gca()
-ax.yaxis.grid(True)
-
-plt.tight_layout()
-#plt.savefig('images/03_02.png', dpi=300)
-plt.show()
-
-
-
-
-
-
-
-# ### Learning the weights of the logistic cost function
 
 
 
@@ -280,27 +145,10 @@ def cost_1(z):
 def cost_0(z):
     return - np.log(1 - sigmoid(z))
 
-z = np.arange(-10, 10, 0.1)
-phi_z = sigmoid(z)
-
-c1 = [cost_1(x) for x in z]
-plt.plot(phi_z, c1, label='J(w) if y=1')
-
-c0 = [cost_0(x) for x in z]
-plt.plot(phi_z, c0, linestyle='--', label='J(w) if y=0')
-
-plt.ylim(0.0, 5.1)
-plt.xlim([0, 1])
-plt.xlabel('$\phi$(z)')
-plt.ylabel('J(w)')
-plt.legend(loc='best')
-plt.tight_layout()
-#plt.savefig('images/03_04.png', dpi=300)
-plt.show()
-
-
-
-
+  
+  
+  
+  
 class LogisticRegressionGD(object):
     """Logistic Regression Classifier using gradient descent.
 
@@ -378,17 +226,150 @@ class LogisticRegressionGD(object):
 
 
 
+def gini(p):
+    return p * (1 - p) + (1 - p) * (1 - (1 - p))
+
+
+def entropy(p):
+    return - p * np.log2(p) - (1 - p) * np.log2((1 - p))
+
+
+def error(p):
+    return 1 - np.max([p, 1 - p])
+  
+  
+
+print("###################OK##################")
+# Training a perceptron model using the standardized training data:
+
+
+
+# %%
+#NOTE: Irisデータセットのロード。
+iris = datasets.load_iris()
+#3,4列目のデータ項目(特徴量)のみ抽出
+X = iris.data[:, [2, 3]]
+#NOTE: クラスラベル取得
+y = iris.target
+
+import collections
+print('Class labels:', dict(collections.Counter(y)))
+
+# Splitting data into 70% training and 30% test data:
+
+#Xtrain: 訓練データ
+#y_train: 訓練データラベル
+
+#y_test: テストデータ
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=1, stratify=y)
+
+print('Labels count in y:', dict(collections.Counter(y)))
+
+print('Labels count in y_train:', collections.Counter(y_train))
+print('Labels count in y_test:', collections.Counter(y_test))
+
+sc = StandardScaler()
+sc.fit(X_train)
+X_train_std = sc.transform(X_train)
+X_test_std = sc.transform(X_test)
+
+# ## Training a perceptron via scikit-learn
+ppn = Perceptron(eta0=0.1, random_state=1)
+ppn.fit(X_train_std, y_train)
+
+y_pred = ppn.predict(X_test_std)
+print('Misclassified examples: %d' % (y_test != y_pred).sum())
+print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
+print('Accuracy:ああ %.3f' % ppn.score(X_test_std, y_test))
+
+# %%
+
+
+
+#NOTE* P54. 特徴量の行方向結合
+
+X_combined_std = np.vstack((X_train_std, X_test_std))
+y_combined = np.hstack((y_train, y_test))
+
+plot_decision_regions(X=X_combined_std, y=y_combined,
+                      classifier=ppn, test_idx=range(105, 150))
+plt.xlabel('petal length [standardized]')
+plt.ylabel('petal width [standardized]')
+plt.legend(loc='upper left')
+
+plt.tight_layout()
+#plt.savefig('images/03_01.png', dpi=300)
+plt.show()
+
+
+
+# # Modeling class probabilities via logistic regression
+
+# ...
+
+# ### Logistic regression intuition and conditional probabilities
+
+# %%
+#NOTE: シグモイド関数
+z = np.arange(-7, 7, 0.1)
+phi_z = sigmoid(z)
+
+plt.plot(z, phi_z)
+plt.axvline(0.0, color='k')
+plt.ylim(-0.1, 1.1)
+plt.xlabel('z')
+plt.ylabel('$\phi (z)$')
+
+# y axis ticks and gridline
+plt.yticks([0.0, 0.5, 1.0])
+ax = plt.gca()
+ax.yaxis.grid(True)
+
+plt.tight_layout()
+#plt.savefig('images/03_02.png', dpi=300)
+plt.show()
+
+
+
+
+
+
+
+# ### Learning the weights of the logistic cost function
+# %%
+#NOTE: 損失関数
+z = np.arange(-10, 10, 0.1)
+phi_z = sigmoid(z)
+
+c1 = [cost_1(x) for x in z]
+plt.plot(phi_z, c1, label='J(w) if y=1')
+
+c0 = [cost_0(x) for x in z]
+plt.plot(phi_z, c0, linestyle='--', label='J(w) if y=0')
+
+plt.ylim(0.0, 5.1)
+plt.xlim([0, 1])
+plt.xlabel('$\phi$(z)')
+plt.ylabel('J(w)')
+plt.legend(loc='best')
+plt.tight_layout()
+#plt.savefig('images/03_04.png', dpi=300)
+plt.show()
+
+
+
+# %%
+
+
+#NOTE: ロジスティック回帰による分類(自作)
+print("ロジスティック回帰による分類(自作)")
 
 X_train_01_subset = X_train_std[(y_train == 0) | (y_train == 1)]
 y_train_01_subset = y_train[(y_train == 0) | (y_train == 1)]
-
 lrgd = LogisticRegressionGD(eta=0.05, n_iter=1000, random_state=1)
-lrgd.fit(X_train_01_subset,
-         y_train_01_subset)
-
-plot_decision_regions(X=X_train_01_subset, 
-                      y=y_train_01_subset,
-                      classifier=lrgd)
+lrgd.fit(X_train_01_subset,y_train_01_subset)
+plot_decision_regions(X=X_train_01_subset, y=y_train_01_subset,classifier=lrgd)
 
 plt.xlabel('petal length [standardized]')
 plt.ylabel('petal width [standardized]')
@@ -398,16 +379,28 @@ plt.tight_layout()
 #plt.savefig('images/03_05.png', dpi=300)
 plt.show()
 
-
-# ### Training a logistic regression model with scikit-learn
-
-
-
+# %%
+#NOTE: ロジスティック回帰による分類(scikit-learn)
+print("ロジスティック回帰による分類(scikit-learn): ２値ver")
 
 lr = LogisticRegression(C=100.0, random_state=1, solver='lbfgs', multi_class='ovr')
+lr.fit(X_train_01_subset,y_train_01_subset)
+plot_decision_regions(X_train_01_subset,y_train_01_subset,classifier=lr)
+plt.xlabel('petal length [standardized]')
+plt.ylabel('petal width [standardized]')
+plt.legend(loc='upper left')
+plt.tight_layout()
+# plt.savefig('images/03_06.png', dpi=300)
+plt.show()
+
+# %%
+#NOTE: ロジスティック回帰による分類(scikit-learn)
+print("ロジスティック回帰による分類(scikit-learn)")
+
+lr = LogisticRegression(C=100.0, random_state=1, solver='lbfgs', multi_class='multinomial')
 lr.fit(X_train_std, y_train)
 
-plot_decision_regions(X_combined_std, y_combined,
+plot_decision_regions(X_train_std, y_train,
                       classifier=lr, test_idx=range(105, 150))
 plt.xlabel('petal length [standardized]')
 plt.ylabel('petal width [standardized]')
@@ -417,39 +410,18 @@ plt.tight_layout()
 plt.show()
 
 
+# %%
 
-
+#NOTE: 所属確率 データ点(行方向)に対する各クラスへの所属確率
 lr.predict_proba(X_test_std[:3, :])
-
-
-
 
 lr.predict_proba(X_test_std[:3, :]).sum(axis=1)
 
-
-
-
 lr.predict_proba(X_test_std[:3, :]).argmax(axis=1)
-
-
-
-
 lr.predict(X_test_std[:3, :])
-
-
-
-
 lr.predict(X_test_std[0, :].reshape(1, -1))
 
-
-
 # ### Tackling overfitting via regularization
-
-
-
-
-
-
 
 weights, params = [], []
 for c in np.arange(-5, 5):
@@ -472,7 +444,7 @@ plt.xscale('log')
 #plt.savefig('images/03_08.png', dpi=300)
 plt.show()
 
-
+#%%
 
 # # Maximum margin classification with support vector machines
 
@@ -614,20 +586,9 @@ plt.show()
 # ## Maximizing information gain - getting the most bang for the buck
 
 
+# %%
 
-
-
-def gini(p):
-    return p * (1 - p) + (1 - p) * (1 - (1 - p))
-
-
-def entropy(p):
-    return - p * np.log2(p) - (1 - p) * np.log2((1 - p))
-
-
-def error(p):
-    return 1 - np.max([p, 1 - p])
-
+#NOTE: ロジスティック赤い木
 x = np.arange(0.0, 1.0, 0.01)
 
 ent = [entropy(p) if p != 0 else None for p in x]
@@ -654,7 +615,7 @@ plt.ylabel('impurity index')
 #plt.savefig('images/03_19.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-
+# %%
 
 # ## Building a decision tree
 
@@ -775,3 +736,5 @@ plt.show()
 
 
 
+
+# %%

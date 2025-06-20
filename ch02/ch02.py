@@ -1,11 +1,14 @@
 # coding: utf-8
-
+# %%
 
 import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+import seaborn as sns; sns.set()
+
+
 
 # Copyright (c) 2019 [Sebastian Raschka](sebastianraschka.com)
 # 
@@ -171,39 +174,21 @@ np.arccos(v1.dot(v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
 s = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
 print('URL:', s)
 
-df = pd.read_csv(s,
-                 header=None,
-                 encoding='utf-8')
+
+
+try:
+  df = pd.read_csv('iris.data', header=None, encoding='utf-8')
+except:
+  df = pd.read_csv(s,header=None,encoding='utf-8')
 
 df.tail()
-
-
-# 
-# ### Note:
-# 
-# 
-# You can find a copy of the Iris dataset (and all other datasets used in this book) in the code bundle of this book, which you can use if you are working offline or the UCI server at https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data is temporarily unavailable. For instance, to load the Iris dataset from a local directory, you can replace the line 
-# 
-#     df = pd.read_csv('https://archive.ics.uci.edu/ml/'
-#         'machine-learning-databases/iris/iris.data', header=None)
-#  
-# by
-#  
-#     df = pd.read_csv('your/local/path/to/iris.data', header=None)
-# 
-
-
-
-df = pd.read_csv('iris.data', header=None, encoding='utf-8')
-df.tail()
-
 
 
 
 # ### Plotting the Iris data
 
 
-
+# %%
 
 # select setosa and versicolor
 y = df.iloc[0:100, 4].values
@@ -230,10 +215,13 @@ plt.show()
 # ### Training the perceptron model
 
 
+import time
 
-ppn = Perceptron(eta=0.1, n_iter=10)
-
+ppn = Perceptron(eta=0.1, n_iter=30)
+stime = time.time()
 ppn.fit(X, y)
+
+print("elapsed time = %.3f"%(time.time()-stime))
 
 plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker='o')
 plt.xlabel('Epochs')
@@ -561,9 +549,9 @@ class AdalineSGD(object):
         return np.where(self.activation(self.net_input(X)) >= 0.0, 1, -1)
 
 
+# %%
 
-
-ada_sgd = AdalineSGD(n_iter=15, eta=0.01, random_state=1)
+ada_sgd = AdalineSGD(n_iter=300, eta=0.00005, random_state=1)
 ada_sgd.fit(X_std, y)
 
 plot_decision_regions(X_std, y, classifier=ada_sgd)
@@ -602,3 +590,5 @@ ada_sgd.partial_fit(X_std[0, :], y[0])
 
 
 
+
+# %%

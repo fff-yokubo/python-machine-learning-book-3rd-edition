@@ -1,0 +1,14 @@
+\ Model 9 x 9 Sudoku_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+ 
+Subject To
+ Constr2J[6;1]: x[(0,6);1] + x[(1,6);1] + x[(2,6);1] + x[(3,6);1]
+   + x[(4,6);1] + x[(5,6);1] + x[(6,6);1] + x[(7,6);1] + x[(8,6);1] = 1
+ Constr4[(4,6)]=1: x[(4,6);1] = 1
+ Constr4[(7,6)]=1: x[(7,6);1] = 1
+Bounds
+Binaries
+ x[(0,6);1] x[(1,6);1] x[(2,6);1] x[(3,6);1] x[(4,6);1] x[(5,6);1]
+ x[(6,6);1] x[(7,6);1] x[(8,6);1]
+End

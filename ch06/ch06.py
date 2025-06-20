@@ -23,8 +23,8 @@ from sklearn.metrics import make_scorer
 from sklearn.metrics import roc_curve, auc
 from distutils.version import LooseVersion as Version
 from scipy import __version__ as scipy_version
-    from numpy import interp
-    from scipy import interp
+from numpy import interp
+from scipy import interp
 from sklearn.utils import resample
 
 # *Python Machine Learning 3rd Edition* by [Sebastian Raschka](https://sebastianraschka.com), Packt Publishing Ltd. 2019
@@ -497,8 +497,9 @@ print(gs.best_params_)
 
 
 if scipy_version >= Version('1.4.1'):
+  pass
 else:
-
+  pass
 
 pipe_lr = make_pipeline(StandardScaler(),
                         PCA(n_components=2),
@@ -620,7 +621,6 @@ np.mean(y_pred == y_bal) * 100
 # ---
 # 
 # Readers may ignore the next cell.
-
 
 
 

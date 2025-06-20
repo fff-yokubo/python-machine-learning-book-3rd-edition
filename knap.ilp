@@ -1,0 +1,14 @@
+\ Model Knapsack_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Maximize
+ 
+Subject To
+ Size: 21 x[item-0] + 11 x[item-1] + 15 x[item-2] + 15 x[item-3]
+   + 34 x[item-4] + 25 x[item-5] + 41 x[item-6] + 80 x[item-7] <= 100
+ Num: x[item-0] + x[item-1] + x[item-2] + x[item-3] + x[item-4] + x[item-5]
+   + x[item-6] + x[item-7] >= 6
+Bounds
+Binaries
+ x[item-0] x[item-1] x[item-2] x[item-3] x[item-4] x[item-5] x[item-6]
+ x[item-7]
+End
